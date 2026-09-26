@@ -106,3 +106,30 @@ public class RegistrarAfiliacionView {
         return root;
     }
 }
+
+ // PUNTO 8: MOSTRAR CONFIRMACIÓN
+            AlertUtil.info(
+                    "Afiliación registrada",
+                    "El registro de " + a.getNombreCompleto()
+                            + " se realizó correctamente."
+            );
+
+            // Limpiar el formulario después del registro
+            txtRegistro.clear();
+            txtNombres.clear();
+            txtApellidos.clear();
+            txtTelefono.clear();
+            txtEmail.clear();
+            txtDomicilio.clear();
+            dpNacimiento.setValue(null);
+        });
+
+        root.getChildren().addAll(
+                titulo,
+                form,
+                btnGuardar
+        );
+
+        return root;
+    }
+}

@@ -72,3 +72,44 @@ public class Afiliado {
         return registroUniversitario + " - " + getNombreCompleto();
     }
 }
+
+
+// 7. Implementar envío del formulario
+btnGuardar.setOnAction(e -> {
+
+    // Obtener los datos registrados por el estudiante
+    String registro = txtRegistro.getText().trim();
+    String nombres = txtNombres.getText().trim();
+    String apellidos = txtApellidos.getText().trim();
+    String telefono = txtTelefono.getText().trim();
+    String email = txtEmail.getText().trim();
+    String domicilio = txtDomicilio.getText().trim();
+
+    // Crear el objeto Afiliado
+    Afiliado afiliado = new Afiliado();
+
+    // Asignar los datos del formulario
+    afiliado.setRegistroUniversitario(registro);
+    afiliado.setNombres(nombres);
+    afiliado.setApellidos(apellidos);
+    afiliado.setRol(cbRol.getValue());
+
+    if (dpNacimiento.getValue() != null) {
+        afiliado.setFechaNacimiento(
+                dpNacimiento.getValue().toString()
+        );
+    }
+
+    afiliado.setTelefono(telefono);
+    afiliado.setEmail(email);
+    afiliado.setDomicilio(domicilio);
+
+    // Datos del registro
+    afiliado.setEstado("ACTIVO");
+    afiliado.setFechaAfiliacion(
+            LocalDate.now().toString()
+    );
+
+    // Enviar los datos para guardarlos
+    afiliadoDAO.insertar(afiliado);
+});
