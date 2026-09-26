@@ -1,3 +1,4 @@
+
 package com.si2.segSocU;
 
 import org.springframework.boot.SpringApplication;
