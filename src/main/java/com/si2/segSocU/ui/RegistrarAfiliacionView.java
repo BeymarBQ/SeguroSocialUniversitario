@@ -173,4 +173,55 @@ public class RegistrarAfiliacionView {
         root.getChildren().addAll(titulo, form, btnGuardar);
         return root;
     }
+    // TASK 4: IMPLEMENTAR VALIDACIÓN DE DATOS
+    private boolean validarCampos() {
+        // 1. Validar Nombre (No vacío y al menos 3 caracteres)
+        if (txtNombre.getText().trim().isEmpty() || txtNombre.getText().trim().length() < 3) {
+            mostrarError("El campo 'Nombre Completo' es obligatorio y debe tener al menos 3 letras.");
+            txtNombre.requestFocus();
+            return false;
+        }
+        // 2. Validar Documento / Pasaporte
+        if (txtDocumento.getText().trim().isEmpty()) {
+            mostrarError("El 'N° Documento / Pasaporte' es obligatorio.");
+            txtDocumento.requestFocus();
+            return false;
+        }
+        // 3. Validar Selección de Nacionalidad
+        if (cbNacionalidad.getValue() == null) {
+            mostrarError("Debe seleccionar una 'Nacionalidad'.");
+            cbNacionalidad.requestFocus();
+            return false;
+        }
+        // 4. Validar Código Universitario (solo números, por ejemplo 9 dígitos)
+        String codigo = txtCodigoUniv.getText().trim();
+        if (codigo.isEmpty() || !codigo.matches("^[0-9]{5,10}$")) {
+            mostrarError("El 'Código Universitario' debe contener entre 5 y 10 dígitos numéricos.");
+            txtCodigoUniv.requestFocus();
+            return false;
+        }
+        // 5. Validar Contacto (solo números, entre 7 y 12 dígitos)
+        String contacto = txtContacto.getText().trim();
+        if (contacto.isEmpty() || !contacto.matches("^[0-9]{7,12}$")) {
+            mostrarError("El número de 'Contacto' debe contener entre 7 y 12 dígitos numéricos.");
+            txtContacto.requestFocus();
+            return false;
+        }
+        return true; // Todos los campos son válidos
+    }
+    private void mostrarError(String mensaje) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error de Validación");
+        alert.setHeaderText(null);
+        alert.setContentText(mensaje);
+        alert.showAndWait();
+    }
+    private void limpiarCampos() {
+        txtNombre.clear();
+        txtDocumento.clear();
+        cbNacionalidad.setValue(null);
+        txtCodigoUniv.clear();
+        txtContacto.clear();
+    }
+}
 }
