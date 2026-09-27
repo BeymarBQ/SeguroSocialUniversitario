@@ -7,5 +7,5 @@ public void mostrarAfiliacion(Afiliacion afiliacion) {
     lblTelefono.setText(afiliacion.getTelefono());
     lblCorreo.setText(afiliacion.getCorreo());
 
-    lblEstadoAfiliacion.setText(afiliacion.getEstadoAfiliacion());
+    mostrarEstadoAfiliacion(afiliacion);
 }
