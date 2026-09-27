@@ -104,3 +104,19 @@ public class Database {
         }
     }
 }
+
+
+CREATE TABLE especialidad (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        nombre TEXT NOT NULL,
+        servicio TEXT NOT NULL
+);
+
+INSERT INTO especialidad (nombre, servicio)
+VALUES
+        ('Medicina General', 'Consulta médica general'),
+('Odontología', 'Consulta odontológica'),
+        ('Ginecología', 'Consulta ginecológica'),
+        ('Pediatría', 'Atención pediátrica'),
+        ('Traumatología', 'Atención de lesiones'),
+        ('Medicina Interna', 'Consulta especializada');
