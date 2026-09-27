@@ -131,4 +131,5 @@ public class AfiliadoDAO {
                 rs.getString("fecha_afiliacion")
         );
     }
+
 }
