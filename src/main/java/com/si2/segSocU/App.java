@@ -109,4 +109,83 @@ public class App extends Application {
 		data.setAll(dao.listarTodos());
 		table.setItems(data);
 	}
+	private VBox crearVistaDisponibilidad() {
+		GridPane grid = new GridPane();
+		grid.setHgap(10); grid.setVgap(10); grid.setPadding(new Insets(10));
+
+		TextField txtMedico = new TextField();
+		TextField txtEspecialidad = new TextField();
+		DatePicker dpFecha = new DatePicker();
+		TextField txtHora = new TextField(); // ej. 09:00
+
+		grid.add(new Label("Médico:"), 0, 0); grid.add(txtMedico, 1, 0);
+		grid.add(new Label("Especialidad:"), 0, 1); grid.add(txtEspecialidad, 1, 1);
+		grid.add(new Label("Fecha:"), 0, 2); grid.add(dpFecha, 1, 2);
+		grid.add(new Label("Hora:"), 0, 3); grid.add(txtHora, 1, 3);
+
+		Button btnGuardar = new Button("Registrar Horario Libre");
+		grid.add(btnGuardar, 1, 4);
+
+		btnGuardar.setOnAction(e -> {
+			if (dpFecha.getValue() != null) {
+				Disponibilidad d = new Disponibilidad(0, txtMedico.getText(), txtEspecialidad.getText(),
+						dpFecha.getValue().toString(), txtHora.getText(), true);
+				citaDAO.guardarDisponibilidad(d);
+				txtMedico.clear(); txtEspecialidad.clear(); txtHora.clear();
+			}
+		});
+
+		return new VBox(10, grid);
+	}
+
+	private VBox crearVistaCitas() {
+		VBox layout = new VBox(10);
+		layout.setPadding(new Insets(10));
+
+		ComboBox<Afiliado> cbAfiliados = new ComboBox<>(FXCollections.observableArrayList(afiliadoDAO.listarTodos()));
+		ComboBox<Disponibilidad> cbHorarios = new ComboBox<>(FXCollections.observableArrayList(citaDAO.listarDisponibilidadLibre()));
+		TextField txtMotivo = new TextField();
+		Button btnAgendar = new Button("Agendar Cita");
+
+		GridPane form = new GridPane();
+		form.setHgap(10); form.setVgap(10);
+		form.add(new Label("Estudiante:"), 0, 0); form.add(cbAfiliados, 1, 0);
+		form.add(new Label("Horario:"), 0, 1); form.add(cbHorarios, 1, 1);
+		form.add(new Label("Motivo:"), 0, 2); form.add(txtMotivo, 1, 2);
+		form.add(btnAgendar, 1, 3);
+
+		TableView<Cita> tablaCitas = new TableView<>();
+		TableColumn<Cita, String> colEstudiante = new TableColumn<>("Estudiante");
+		colEstudiante.setCellValueFactory(new PropertyValueFactory<>("nombreAfiliado"));
+		TableColumn<Cita, String> colHorario = new TableColumn<>("Horario / Médico");
+		colHorario.setCellValueFactory(new PropertyValueFactory<>("detalleHorario"));
+		TableColumn<Cita, String> colEstado = new TableColumn<>("Estado");
+		colEstado.setCellValueFactory(new PropertyValueFactory<>("estado"));
+
+		tablaCitas.getColumns().addAll(colEstudiante, colHorario, colEstado);
+		tablaCitas.setItems(FXCollections.observableArrayList(citaDAO.listarCitas()));
+
+		btnAgendar.setOnAction(e -> {
+			Afiliado af = cbAfiliados.getValue();
+			Disponibilidad disp = cbHorarios.getValue();
+			if (af != null && disp != null) {
+				citaDAO.agendarCita(af.getId(), disp.getId(), txtMotivo.getText());
+				tablaCitas.setItems(FXCollections.observableArrayList(citaDAO.listarCitas()));
+				cbHorarios.setItems(FXCollections.observableArrayList(citaDAO.listarDisponibilidadLibre()));
+			}
+		});
+
+		// Cambio de estado
+		Button btnAtender = new Button("Marcar como ATENDIDA");
+		btnAtender.setOnAction(e -> {
+			Cita seleccionada = tablaCitas.getSelectionModel().getSelectedItem();
+			if (seleccionada != null) {
+				citaDAO.actualizarEstadoCita(seleccionada.getId(), "ATENDIDA", "Atención finalizada con éxito");
+				tablaCitas.setItems(FXCollections.observableArrayList(citaDAO.listarCitas()));
+			}
+		});
+
+		layout.getChildren().addAll(form, tablaCitas, btnAtender);
+		return layout;
+	}
 }
