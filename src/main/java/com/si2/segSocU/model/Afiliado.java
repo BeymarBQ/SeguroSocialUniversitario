@@ -115,4 +115,3 @@ btnGuardar.setOnAction(e -> {
     afiliadoDAO.insertar(afiliado);
 });
 
-Hola mi mundo
