@@ -120,3 +120,14 @@ VALUES
         ('Pediatría', 'Atención pediátrica'),
         ('Traumatología', 'Atención de lesiones'),
         ('Medicina Interna', 'Consulta especializada');
+
+
+
+CREATE TABLE IF NOT EXISTS citas (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        estudiante_id INTEGER NOT NULL,
+        servicio_id INTEGER NOT NULL,
+        fecha TEXT NOT NULL,
+        hora TEXT NOT NULL,
+        estado TEXT NOT NULL
+);
