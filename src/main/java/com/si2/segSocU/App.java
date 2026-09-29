@@ -189,3 +189,92 @@ public class App extends Application {
 		return layout;
 	}
 }
+private VBox crearVistaCancelacion() {
+	VBox layout = new VBox(10);
+	layout.setPadding(new Insets(10));
+
+	Label lblTitulo = new Label("Gestión de Cancelación de Citas");
+
+	TableView<Cita> tablaCitas = new TableView<>();
+	TableColumn<Cita, String> colUsuario = new TableColumn<>("Afiliado");
+	colUsuario.setCellValueFactory(new PropertyValueFactory<>("nombreAfiliado"));
+	TableColumn<Cita, String> colHorario = new TableColumn<>("Horario / Médico");
+	colHorario.setCellValueFactory(new PropertyValueFactory<>("detalleHorario"));
+	TableColumn<Cita, String> colEstado = new TableColumn<>("Estado");
+	colEstado.setCellValueFactory(new PropertyValueFactory<>("estado"));
+
+	tablaCitas.getColumns().addAll(colUsuario, colHorario, colEstado);
+
+	// Cargar todas las citas del DAO
+	tablaCitas.setItems(FXCollections.observableArrayList(citaDAO.listarCitas()));
+
+	TextField txtMotivo = new TextField();
+	txtMotivo.setPromptText("Motivo de cancelación");
+	Button btnCancelar = new Button("Confirmar Cancelación");
+	Label lblMensaje = new Label();
+
+	HBox controlBox = new HBox(10, txtMotivo, btnCancelar);
+
+	btnCancelar.setOnAction(e -> {
+		Cita seleccionada = tablaCitas.getSelectionModel().getSelectedItem();
+		if (seleccionada == null) {
+			lblMensaje.setText("Seleccione una cita de la tabla.");
+			lblMensaje.setTextFill(Color.ORANGE);
+			return;
+		}
+
+		if ("CANCELADA".equalsIgnoreCase(seleccionada.getEstado())) {
+			lblMensaje.setText("La cita seleccionada ya se encuentra cancelada.");
+			lblMensaje.setTextFill(Color.RED);
+			return;
+		}
+
+		String motivo = txtMotivo.getText().trim();
+		if (motivo.isEmpty()) motivo = "Cancelado por el usuario/administrador";
+
+		if (citaDAO.cancelarCita(seleccionada.getId(), motivo)) {
+			lblMensaje.setText("Cita cancelada con éxito y horario liberado.");
+			lblMensaje.setTextFill(Color.GREEN);
+			txtMotivo.clear();
+			tablaCitas.setItems(FXCollections.observableArrayList(citaDAO.listarCitas()));
+		} else {
+			lblMensaje.setText("Error al procesar la cancelación.");
+			lblMensaje.setTextFill(Color.RED);
+		}
+	});
+
+	layout.getChildren().addAll(lblTitulo, tablaCitas, controlBox, lblMensaje);
+	return layout;
+}
+
+// 03. Mostrar las citas pendientes del docente
+private VBox crearVistaDocentes() {
+	VBox layout = new VBox(10);
+	layout.setPadding(new Insets(10));
+
+	Label lblTitulo = new Label("Citas Médicas Pendientes - Sector Docente");
+	Button btnActualizar = new Button("Actualizar Lista");
+
+	TableView<Cita> tablaDocentes = new TableView<>();
+	TableColumn<Cita, String> colDocente = new TableColumn<>("Docente");
+	colDocente.setCellValueFactory(new PropertyValueFactory<>("nombreAfiliado"));
+	TableColumn<Cita, String> colHorario = new TableColumn<>("Horario / Médico");
+	colHorario.setCellValueFactory(new PropertyValueFactory<>("detalleHorario"));
+	TableColumn<Cita, String> colMotivo = new TableColumn<>("Motivo");
+	colMotivo.setCellValueFactory(new PropertyValueFactory<>("motivo"));
+	TableColumn<Cita, String> colEstado = new TableColumn<>("Estado");
+	colEstado.setCellValueFactory(new PropertyValueFactory<>("estado"));
+
+	tablaDocentes.getColumns().addAll(colDocente, colHorario, colMotivo, colEstado);
+
+	// Cargar únicamente las pendientes del docente
+	tablaDocentes.setItems(FXCollections.observableArrayList(citaDAO.listarCitasPendientesDocente()));
+
+	btnActualizar.setOnAction(e -> {
+		tablaDocentes.setItems(FXCollections.observableArrayList(citaDAO.listarCitasPendientesDocente()));
+	});
+
+	layout.getChildren().addAll(lblTitulo, btnActualizar, tablaDocentes);
+	return layout;
+}
+}

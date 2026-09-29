@@ -243,3 +243,93 @@ public List<Cita> listarCitas() {
     }
     return lista;
 }
+public boolean cancelarCita(int citaId, String motivoCancelacion) {
+    String sqlCita = "UPDATE citas SET estado = 'CANCELADA' WHERE id = ?";
+    String sqlGetDisp = "SELECT disponibilidad_id FROM citas WHERE id = ?";
+    String sqlUpdateDisp = "UPDATE disponibilidad SET disponible = 1 WHERE id = ?";
+
+    try (Connection conn = Database.getConnection()) {
+        conn.setAutoCommit(false);
+
+        int dispId = -1;
+        try (PreparedStatement pstmtGet = conn.prepareStatement(sqlGetDisp)) {
+            pstmtGet.setInt(1, citaId);
+            ResultSet rs = pstmtGet.executeQuery();
+            if (rs.next()) {
+                dispId = rs.getInt("disponibilidad_id");
+            }
+        }
+
+        if (dispId == -1) {
+            conn.rollback();
+            return false;
+        }
+
+        // Cambiar estado de la cita
+        try (PreparedStatement pstmtCita = conn.prepareStatement(sqlCita)) {
+            pstmtCita.setInt(1, citaId);
+            pstmtCita.executeUpdate();
+        }
+
+        // Liberar el horario de disponibilidad
+        try (PreparedStatement pstmtDisp = conn.prepareStatement(sqlUpdateDisp)) {
+            pstmtDisp.setInt(1, dispId);
+            pstmtDisp.executeUpdate();
+        }
+
+        // Registrar la acción de cancelación en el historial
+        registrarCambio(conn, citaId, "CANCELACION", "Cita cancelada. Motivo: " + motivoCancelacion);
+
+        conn.commit();
+        return true;
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return false;
+}
+
+// 03. Mostrar las citas pendientes filtrando afiliados con rol 'Docente'
+public List<Cita> listarCitasPendientesDocente() {
+    List<Cita> lista = new ArrayList<>();
+    String sql = """
+            SELECT c.id, c.afiliado_id, c.disponibilidad_id, c.estado, c.motivo,
+                   (a.nombres || ' ' || a.apellidos) AS docente,
+                   (d.fecha || ' ' || d.hora || ' - ' || d.medico) AS horario
+            FROM citas c
+            JOIN afiliados a ON c.afiliado_id = a.id
+            JOIN disponibilidad d ON c.disponibilidad_id = d.id
+            WHERE c.estado = 'PENDIENTE' AND LOWER(a.rol) = 'docente'
+        """;
+
+    try (Connection conn = Database.getConnection();
+         Statement stmt = conn.createStatement();
+         ResultSet rs = stmt.executeQuery(sql)) {
+
+        while (rs.next()) {
+            Cita c = new Cita(
+                    rs.getInt("id"),
+                    rs.getInt("afiliado_id"),
+                    rs.getInt("disponibilidad_id"),
+                    rs.getString("estado"),
+                    rs.getString("motivo")
+            );
+            c.setNombreAfiliado(rs.getString("docente"));
+            c.setDetalleHorario(rs.getString("horario"));
+            lista.add(c);
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return lista;
+}
+
+private void registrarCambio(Connection conn, int citaId, String accion, String detalles) throws SQLException {
+    String sql = "INSERT INTO historial_citas(cita_id, accion, detalles, fecha_registro) VALUES(?,?,?,?)";
+    try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        pstmt.setInt(1, citaId);
+        pstmt.setString(2, accion);
+        pstmt.setString(3, detalles);
+        pstmt.setString(4, LocalDateTime.now().toString());
+        pstmt.executeUpdate();
+    }
+}
