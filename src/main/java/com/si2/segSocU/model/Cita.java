@@ -86,3 +86,46 @@ public class Atencion {
     public String getFecha() { return fecha; }
     public void setFecha(String fecha) { this.fecha = fecha; }
 }
+
+
+//task dia lunes N° 10
+package dao;
+
+import db.Database;
+import model.Atencion;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+public class AtencionDAO {
+
+    /**
+     * Tarea 10: Inserta el registro de atención médica en la base de datos.
+     * Retorna el ID generado para la atención registrada.
+     */
+    public int insertar(Atencion atencion) throws SQLException {
+        String sql = "INSERT INTO atencion (cita_id, motivo, diagnostico, indicaciones, fecha) VALUES (?, ?, ?, ?, ?)";
+
+        Connection conn = Database.getInstance().getConnection();
+        try (PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            stmt.setInt(1, atencion.getCitaId());
+            stmt.setString(2, atencion.getMotivo());
+            stmt.setString(3, atencion.getDiagnostico());
+            stmt.setString(4, atencion.getIndicaciones());
+            stmt.setString(5, atencion.getFecha());
+
+            int filasAfectadas = stmt.executeUpdate();
+            if (filasAfectadas > 0) {
+                try (ResultSet rs = stmt.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        return rs.getInt(1);
+                    }
+                }
+            }
+        }
+        return -1;
+    }
+}
