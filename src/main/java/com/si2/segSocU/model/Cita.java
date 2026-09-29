@@ -129,3 +129,30 @@ public class AtencionDAO {
         return -1;
     }
 }
+
+//task N°6 cancelar una cita medica
+
+package dao;
+
+import db.Database;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+public class CitaDAO {
+
+    /**
+     * Task 09 / Task 07: Cambia el estado de la cita a "CANCELADA".
+     * No elimina la cita de la BD, manteniendo el registro histórico.
+     */
+    public void cambiarEstado(int idCita, String nuevoEstado) throws SQLException {
+        String sql = "UPDATE cita SET estado = ? WHERE id = ?";
+
+        Connection conn = Database.getInstance().getConnection();
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, nuevoEstado);
+            stmt.setInt(2, idCita);
+            stmt.executeUpdate();
+        }
+    }
+}
