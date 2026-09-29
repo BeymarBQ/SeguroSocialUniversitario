@@ -156,3 +156,79 @@ public class CitaDAO {
         }
     }
 }
+
+//task N° 9 martes
+
+package ui;
+
+import dao.CitaDAO;
+import dao.DisponibilidadDAO;
+import model.Cita;
+import util.AlertUtil;
+
+import java.sql.SQLException;
+
+public class CancelarCitaView {
+
+    private CitaDAO citaDAO = new CitaDAO();
+    private DisponibilidadDAO disponibilidadDAO = new DisponibilidadDAO();
+
+    /**
+     * Maneja la acción del botón / opción de cancelación de una cita seleccionada.
+     *
+     * @param citaSeleccionada La cita pendiente elegida por el docente.
+     */
+    public void cancelarCitaSeleccionada(Cita citaSeleccionada) {
+        if (citaSeleccionada == null) {
+            AlertUtil.mostrarError("Selección requerida", "Debe seleccionar una cita pendiente para cancelar.");
+            return;
+        }
+
+        // =========================================================================
+        // Task 06: Solicitar confirmación de la cancelación
+        // =========================================================================
+        boolean confirmado = AlertUtil.mostrarConfirmacion(
+                "Confirmar cancelación",
+                "¿Está seguro de que desea cancelar la cita médica del " +
+                        citaSeleccionada.getFecha() + " a las " + citaSeleccionada.getHora() + "?"
+        );
+
+        if (!confirmado) {
+            // El usuario canceló la acción de confirmación
+            return;
+        }
+
+        try {
+            // =========================================================================
+            // Task 09 (y Task 07, 08): Actualizar estado a CANCELADA, mantener en registro
+            // y liberar cupo/horario.
+            // =========================================================================
+
+            // 1. Cambiar estado a "CANCELADA" (Mantiene el registro en BD - Task 09)
+            citaDAO.cambiarEstado(citaSeleccionada.getId(), "CANCELADA");
+
+            // 2. Liberar el cupo/horario correspondiente (Task 08)
+            disponibilidadDAO.incrementarCupoPorMedicoFechaHora(
+                    citaSeleccionada.getMedicoId(),
+                    citaSeleccionada.getFecha(),
+                    citaSeleccionada.getHora()
+            );
+
+            AlertUtil.mostrarInfo(
+                    "Cita Cancelada",
+                    "La cita fue cancelada exitosamente y permanecerá en su historial de registros."
+            );
+
+            // Refrescar lista de citas pendientes en la interfaz
+            actualizarListaCitasPendientes();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            AlertUtil.mostrarError("Error", "Ocurrió un error al intentar cancelar la cita: " + e.getMessage());
+        }
+    }
+
+    private void actualizarListaCitasPendientes() {
+        // Lógica para recargar la tabla/lista de citas de la UI
+    }
+}
