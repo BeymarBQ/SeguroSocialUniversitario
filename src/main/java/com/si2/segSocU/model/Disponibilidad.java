@@ -2,30 +2,38 @@ package com.si2.segsocu.model;
 
 public class Disponibilidad {
     private int id;
-    private String medico;
-    private String especialidad;
+    private int medicoId;
+    private String medicoNombres;
     private String fecha;
     private String hora;
-    private boolean disponible;
+    private int cupos;
 
-    public Disponibilidad(int id, String medico, String especialidad, String fecha, String hora, boolean disponible) {
+    public Disponibilidad() {}
+
+    public Disponibilidad(int id, int medicoId, String medicoNombres, String fecha, String hora, int cupos) {
         this.id = id;
-        this.medico = medico;
-        this.especialidad = especialidad;
+        this.medicoId = medicoId;
+        this.medicoNombres = medicoNombres;
         this.fecha = fecha;
         this.hora = hora;
-        this.disponible = disponible;
+        this.cupos = cupos;
     }
 
     public int getId() { return id; }
-    public String getMedico() { return medico; }
-    public String getEspecialidad() { return especialidad; }
-    public String getFecha() { return fecha; }
-    public String getHora() { return hora; }
-    public boolean isDisponible() { return disponible; }
+    public void setId(int id) { this.id = id; }
 
-    @Override
-    public String toString() {
-        return fecha + " " + hora + " - " + medico + " (" + especialidad + ")";
-    }
+    public int getMedicoId() { return medicoId; }
+    public void setMedicoId(int medicoId) { this.medicoId = medicoId; }
+
+    public String getMedicoNombres() { return medicoNombres; }
+    public void setMedicoNombres(String medicoNombres) { this.medicoNombres = medicoNombres; }
+
+    public String getFecha() { return fecha; }
+    public void setFecha(String fecha) { this.fecha = fecha; }
+
+    public String getHora() { return hora; }
+    public void setHora(String hora) { this.hora = hora; }
+
+    public int getCupos() { return cupos; }
+    public void setCupos(int cupos) { this.cupos = cupos; }
 }
