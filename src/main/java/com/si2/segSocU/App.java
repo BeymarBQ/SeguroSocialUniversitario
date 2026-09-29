@@ -277,3 +277,4 @@ private VBox crearVistaDocentes() {
 	layout.getChildren().addAll(lblTitulo, btnActualizar, tablaDocentes);
 	return layout;
 }
+}
