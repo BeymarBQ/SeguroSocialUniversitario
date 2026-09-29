@@ -333,3 +333,39 @@ private void registrarCambio(Connection conn, int citaId, String accion, String 
         pstmt.executeUpdate();
     }
 }
+// Consultar y asociar las citas programadas con un estudiante por su Registro Universitario
+public List<Cita> buscarCitasProgramadasPorEstudiante(String registroUniversitario) {
+    List<Cita> lista = new ArrayList<>();
+    String sql = """
+            SELECT c.id, c.afiliado_id, c.disponibilidad_id, c.estado, c.motivo,
+                   (a.nombres || ' ' || a.apellidos) AS estudiante,
+                   (d.fecha || ' ' || d.hora || ' - Dr(a). ' || d.medico || ' (' || d.especialidad || ')') AS horario
+            FROM citas c
+            JOIN afiliados a ON c.afiliado_id = a.id
+            JOIN disponibilidad d ON c.disponibilidad_id = d.id
+            WHERE a.registro_universitario = ? AND c.estado = 'PENDIENTE'
+        """;
+
+    try (Connection conn = Database.getConnection();
+         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+        pstmt.setString(1, registroUniversitario);
+        try (ResultSet rs = pstmt.executeQuery()) {
+            while (rs.next()) {
+                Cita c = new Cita(
+                        rs.getInt("id"),
+                        rs.getInt("afiliado_id"),
+                        rs.getInt("disponibilidad_id"),
+                        rs.getString("estado"),
+                        rs.getString("motivo")
+                );
+                c.setNombreAfiliado(rs.getString("estudiante"));
+                c.setDetalleHorario(rs.getString("horario"));
+                lista.add(c);
+            }
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return lista;
+}
