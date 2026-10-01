@@ -131,5 +131,54 @@ public class AfiliadoDAO {
                 rs.getString("fecha_afiliacion")
         );
     }
+    public boolean tieneProcesosMedicosAbiertos(int afiliadoId) {
+        String sql = """
+            SELECT COUNT(*) AS total 
+            FROM citas 
+            WHERE afiliado_id = ? AND estado IN ('PENDIENTE', 'EN_PROCESO')
+        """;
+
+        try (Connection conn = Database.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, afiliadoId);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("total") > 0;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    // 08. Registrar la fecha efectiva de la baja y actualizar estado
+    public boolean darDeBajaAfiliado(int afiliadoId, String motivo) {
+        String sql = """
+            UPDATE afiliados 
+            SET estado = 'INACTIVO', 
+                fecha_baja = ?, 
+                motivo_baja = ? 
+            WHERE id = ?
+        """;
+
+        try (Connection conn = Database.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            // Registrar la fecha actual como fecha efectiva de baja
+            pstmt.setString(1, LocalDate.now().toString());
+            pstmt.setString(2, motivo);
+            pstmt.setInt(3, afiliadoId);
+
+            int filasAfectadas = pstmt.executeUpdate();
+            return filasAfectadas > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 
 }
+
