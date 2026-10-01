@@ -232,3 +232,57 @@ public class CancelarCitaView {
         // Lógica para recargar la tabla/lista de citas de la UI
     }
 }
+
+
+//tarea del miercoles task 1 --- 2 1111
+package model;
+
+public class Especialidad {
+    private int id;
+    private String nombre;
+    private String requisitos;      // Task 02: Requisitos de acceso
+    private String descripcion;     // Task 02: Información específica
+    private boolean requiereCita;   // Task 02: Indicador si requiere cita previa
+    private String horarioAtencion; // Task 02: Horarios del servicio
+
+    public Especialidad() {}
+
+    public Especialidad(int id, String nombre, String requisitos) {
+        this.id = id;
+        this.nombre = nombre;
+        this.requisitos = requisitos;
+    }
+
+    public Especialidad(int id, String nombre, String requisitos, String descripcion, boolean requiereCita, String horarioAtencion) {
+        this.id = id;
+        this.nombre = nombre;
+        this.requisitos = requisitos;
+        this.descripcion = descripcion;
+        this.requiereCita = requiereCita;
+        this.horarioAtencion = horarioAtencion;
+    }
+
+    // Getters y Setters
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
+
+    public String getNombre() { return nombre; }
+    public void setNombre(String nombre) { this.nombre = nombre; }
+
+    public String getRequisitos() { return requisitos; }
+    public void setRequisitos(String requisitos) { this.requisitos = requisitos; }
+
+    public String getDescripcion() { return descripcion; }
+    public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
+
+    public boolean isRequiereCita() { return requiereCita; }
+    public void setRequiereCita(boolean requiereCita) { this.requiereCita = requiereCita; }
+
+    public String getHorarioAtencion() { return horarioAtencion; }
+    public void setHorarioAtencion(String horarioAtencion) { this.horarioAtencion = horarioAtencion; }
+
+    @Override
+    public String toString() {
+        return this.nombre;
+    }
+}
