@@ -136,27 +136,5 @@ public class DarDeBajaAfiliacionView {
         layout.getChildren().addAll(lblTitulo, searchBox, gridInfo, lblMotivo, txtMotivo, btnConfirmarBaja, lblMensaje);
         return layout;
     }
-    public class DarBajaAfiliacionView {
 
-        private AfiliadoDAO afiliadoDAO = new AfiliadoDAO();
-
-        // TASK 05: Validar que la afiliación esté activa
-        public boolean validarAfiliacionActiva(Afiliado afiliado) {
-            if (afiliado == null || !"ACTIVO".equalsIgnoreCase(afiliado.getEstado())) {
-                System.out.println("Error: La afiliación no está activa.");
-                return false;
-            }
-            return true;
-        }
-
-        // TASK 06: Consultar las atenciones médicas pendientes
-        public boolean tieneAtencionesPendientes(String codigoEstudiante) {
-            int pendientes = afiliadoDAO.consultarAtencionesPendientes(codigoEstudiante);
-            if (pendientes > 0) {
-                System.out.println("No se puede dar de baja. Tiene " + pendientes + " atenciones/citas pendientes.");
-                return true;
-            }
-            return false;
-        }
-    }
 }
