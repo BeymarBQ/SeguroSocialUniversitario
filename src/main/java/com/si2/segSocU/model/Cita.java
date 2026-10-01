@@ -286,3 +286,74 @@ public class Especialidad {
         return this.nombre;
     }
 }
+
+//task 2 miercoles
+package dao;
+
+import db.Database;
+import model.Especialidad;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+public class EspecialidadDAO {
+
+    /**
+     * Task 01 & Task 02:
+     * Identifica y recupera la lista completa de servicios médicos disponibles
+     * con toda su información asociada (requisitos, cita previa, descripción).
+     */
+    public List<Especialidad> listarTodos() throws SQLException {
+        List<Especialidad> listaServicios = new ArrayList<>();
+
+        // Consulta SQL para traer todos los servicios activos/disponibles
+        String sql = "SELECT id, nombre, requisitos, descripcion, requiere_cita, horario_atencion FROM especialidad";
+
+        Connection conn = Database.getInstance().getConnection();
+        try (PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                Especialidad esp = new Especialidad();
+                esp.setId(rs.getInt("id"));
+                esp.setNombre(rs.getString("nombre"));
+                esp.setRequisitos(rs.getString("requisitos"));
+                esp.setDescripcion(rs.getString("descripcion"));
+                esp.setRequiereCita(rs.getBoolean("requiere_cita"));
+                esp.setHorarioAtencion(rs.getString("horario_atencion"));
+
+                listaServicios.add(esp);
+            }
+        }
+        return listaServicios;
+    }
+
+    /**
+     * Task 02: Obtener la información detallada de un servicio específico por su ID
+     */
+    public Especialidad buscarPorId(int id) throws SQLException {
+        String sql = "SELECT id, nombre, requisitos, descripcion, requiere_cita, horario_atencion FROM especialidad WHERE id = ?";
+
+        Connection conn = Database.getInstance().getConnection();
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return new Especialidad(
+                            rs.getInt("id"),
+                            rs.getString("nombre"),
+                            rs.getString("requisitos"),
+                            rs.getString("descripcion"),
+                            rs.getBoolean("requiere_cita"),
+                            rs.getString("horarioAtencion")
+                    );
+                }
+            }
+        }
+        return null;
+    }
+}
