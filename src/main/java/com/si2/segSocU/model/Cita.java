@@ -396,3 +396,62 @@ public class SolicitudBaja {
     public String getEstadoAnterior() { return estadoAnterior; }
     public void setEstadoAnterior(String estadoAnterior) { this.estadoAnterior = estadoAnterior; }
 }
+
+
+//task 2
+package ui;
+
+import model.Afiliado;
+import model.SolicitudBaja;
+import util.AlertUtil;
+
+import java.time.LocalDate;
+
+public class DarDeBajaAfiliacionView {
+
+    // Componentes del Formulario / UI
+    private String txtCodsisBusqueda;
+    private String txtMotivoBaja;
+    private String txtFechaEfectiva;
+    private Afiliado estudianteEncontrado;
+
+    public DarDeBajaAfiliacionView() {
+        this.txtFechaEfectiva = LocalDate.now().toString(); // Fecha por defecto
+    }
+
+    /**
+     * Renderiza o inicializa la estructura de la vista
+     */
+    public void inicializarPantalla() {
+        // En una UI Swing/JavaFX aquí se instancian los paneles,
+        // botones ("Buscar", "Confirmar Baja") y campos de texto.
+        System.out.println("--- Pantalla de Solicitud de Baja de Afiliación ---");
+    }
+
+    /**
+     * Captura los datos ingresados en la interfaz para construir el objeto de solicitud (Task 01)
+     */
+    public SolicitudBaja obtenerDatosFormulario() {
+        if (estudianteEncontrado == null) {
+            AlertUtil.mostrarError("Error", "Debe buscar y seleccionar un estudiante primero.");
+            return null;
+        }
+
+        if (txtMotivoBaja == null || txtMotivoBaja.trim().isEmpty()) {
+            AlertUtil.mostrarError("Campo Requerido", "Debe ingresar el motivo de la baja.");
+            return null;
+        }
+
+        return new SolicitudBaja(
+                estudianteEncontrado.getId(),
+                estudianteEncontrado.getCodsis(),
+                this.txtMotivoBaja.trim(),
+                this.txtFechaEfectiva
+        );
+    }
+
+    // Setters mock para simular la captura de datos en la UI
+    public void setTxtCodsisBusqueda(String codsis) { this.txtCodsisBusqueda = codsis; }
+    public void setTxtMotivoBaja(String motivo) { this.txtMotivoBaja = motivo; }
+    public void setEstudianteEncontrado(Afiliado afiliado) { this.estudianteEncontrado = afiliado; }
+}
