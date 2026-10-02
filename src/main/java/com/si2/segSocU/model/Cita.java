@@ -357,3 +357,42 @@ public class EspecialidadDAO {
         return null;
     }
 }
+
+
+//hola mundo dia jueves task 1
+package model;
+
+import java.time.LocalDate;
+
+public class SolicitudBaja {
+    private int afiliadoId;
+    private String codsis;          // Para identificar y buscar al estudiante
+    private String motivo;          // Condición: Registrar motivo de la baja
+    private String fechaEfectiva;   // Condición: Registrar fecha efectiva
+    private String estadoAnterior;
+
+    public SolicitudBaja() {}
+
+    public SolicitudBaja(int afiliadoId, String codsis, String motivo, String fechaEfectiva) {
+        this.afiliadoId = afiliadoId;
+        this.codsis = codsis;
+        this.motivo = motivo;
+        this.fechaEfectiva = fechaEfectiva != null ? fechaEfectiva : LocalDate.now().toString();
+    }
+
+    // Getters y Setters
+    public int getAfiliadoId() { return afiliadoId; }
+    public void setAfiliadoId(int afiliadoId) { this.afiliadoId = afiliadoId; }
+
+    public String getCodsis() { return codsis; }
+    public void setCodsis(String codsis) { this.codsis = codsis; }
+
+    public String getMotivo() { return motivo; }
+    public void setMotivo(String motivo) { this.motivo = motivo; }
+
+    public String getFechaEfectiva() { return fechaEfectiva; }
+    public void setFechaEfectiva(String fechaEfectiva) { this.fechaEfectiva = fechaEfectiva; }
+
+    public String getEstadoAnterior() { return estadoAnterior; }
+    public void setEstadoAnterior(String estadoAnterior) { this.estadoAnterior = estadoAnterior; }
+}
